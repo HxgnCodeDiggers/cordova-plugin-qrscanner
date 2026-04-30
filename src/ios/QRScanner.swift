@@ -132,7 +132,7 @@ class QRScanner : CDVPlugin, AVCaptureMetadataOutputObjectsDelegate {
         do {
             if (captureSession?.isRunning != true){
                 cameraView.backgroundColor = UIColor.clear
-                self.webView!.superview!.insertSubview(cameraView, belowSubview: self.webView!)
+                self.viewController!.view.insertSubview(cameraView, at: 0)
                 let availableVideoDevices =  AVCaptureDevice.devices(for: AVMediaType.video)
                 for device in availableVideoDevices {
                     if device.position == AVCaptureDevice.Position.back {

@@ -18,7 +18,7 @@ class QRScanner : CDVPlugin, AVCaptureMetadataOutputObjectsDelegate {
             case UIInterfaceOrientation.landscapeRight:
                 return AVCaptureVideoOrientation.landscapeRight;
             default:
-                return AVCaptureVideoOrientation.portraitUpsideDown;
+                return AVCaptureVideoOrientation.portrait;
             }
         }
 
@@ -30,9 +30,8 @@ class QRScanner : CDVPlugin, AVCaptureMetadataOutputObjectsDelegate {
                 }
             }
 
-            self.videoPreviewLayer?.connection?.videoOrientation = interfaceOrientationToVideoOrientation(UIApplication.shared.statusBarOrientation);
+            self.videoPreviewLayer?.connection?.videoOrientation = interfaceOrientationToVideoOrientation(self.currentInterfaceOrientation());
         }
-
 
         func addPreviewLayer(_ previewLayer:AVCaptureVideoPreviewLayer?) {
             previewLayer!.videoGravity = AVLayerVideoGravity.resizeAspectFill
@@ -46,6 +45,23 @@ class QRScanner : CDVPlugin, AVCaptureMetadataOutputObjectsDelegate {
                 self.videoPreviewLayer!.removeFromSuperlayer()
                 self.videoPreviewLayer = nil
             }
+        }
+
+        func currentInterfaceOrientation() -> UIInterfaceOrientation {
+            if #available(iOS 13.0, *) {
+                let scene = self.window?.windowScene
+                    ?? UIApplication.shared.connectedScenes
+                        .compactMap({ $0 as? UIWindowScene })
+                        .first(where: { $0.activationState == .foregroundActive })
+                    ?? UIApplication.shared.connectedScenes
+                        .compactMap({ $0 as? UIWindowScene })
+                        .first
+                if let orientation = scene?.interfaceOrientation, orientation != .unknown {
+                    return orientation
+                }
+                return .portrait
+            }
+            return UIApplication.shared.statusBarOrientation
         }
     }
 
